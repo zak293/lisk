@@ -24,5 +24,6 @@ module.exports = {
 	},
 	stress: {
 		transfer: require('./stress/0.transfer'),
+		delegate: require('./stress/2.delegate'),
 	},
 };
