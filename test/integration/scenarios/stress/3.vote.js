@@ -53,7 +53,7 @@ module.exports = function(params) {
 		beforeEach('send 50 LSK to 1000 accounts', done => {
 			Promise.mapSeries(_.range(Math.ceil(maximum / bundleSize)), () => {
 				const bundled = [];
-				_.range(bundleSize).each(() => {
+				_.range(bundleSize).forEach(() => {
 					const account = randomUtil.account();
 					const transaction = lisk.transaction.createTransaction(
 						account.address,
@@ -82,7 +82,7 @@ module.exports = function(params) {
 					_.range(Math.ceil(maximum / bundleSize)),
 					bundledRequestNum => {
 						const bundled = [];
-						_.range(bundleSize).each(transactionIndexWithinBundle => {
+						_.range(bundleSize).forEach(transactionIndexWithinBundle => {
 							const account =
 								bundledRequestNum * bundleSize + transactionIndexWithinBundle;
 							const transaction = lisk.vote.createVote(

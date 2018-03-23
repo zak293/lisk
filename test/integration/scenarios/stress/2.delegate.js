@@ -26,11 +26,11 @@ var getTransaction = require('../../utils/http').getTransaction;
 
 module.exports = function(params) {
 	describe('postTransactions - type 2 @slow', () => {
-		const bundleSize = params.configurations[0].broadcasts.releaseLimit;
-		const transferTransactions = [];
-		const accounts = [];
-		const maximum = 1000;
+		const maximum = 25;
 		const transferAmount = 5000000000;
+		let transferTransactions;
+		let accounts;
+		let bundleSize;
 
 		function confirmTransactionsOnAllNodes(transactions) {
 			return Promise.all(
@@ -48,10 +48,17 @@ module.exports = function(params) {
 			});
 		}
 
+		before(done => {
+			bundleSize = params.configurations[0].broadcasts.releaseLimit;
+			done();
+		});
+
 		beforeEach('send 50 LSK to 1000 accounts', done => {
+			transferTransactions = [];
+			accounts = [];
 			Promise.mapSeries(_.range(Math.ceil(maximum / bundleSize)), () => {
 				const bundled = [];
-				_.range(bundleSize).each(() => {
+				_.range(bundleSize).forEach(() => {
 					const account = randomUtil.account();
 					const transaction = lisk.transaction.createTransaction(
 						account.address,
@@ -65,7 +72,7 @@ module.exports = function(params) {
 
 				return sendTransactionsPromise(bundled);
 			}).then(() => {
-				const blocksToWait = Math.ceil(maximum / constants.maxTxsPerBlock);
+				const blocksToWait = Math.ceil(maximum / constants.maxTxsPerBlock) + 1;
 				waitFor.blocks(blocksToWait, () => {
 					confirmTransactionsOnAllNodes(transferTransactions).then(done);
 				});
@@ -80,9 +87,11 @@ module.exports = function(params) {
 					_.range(Math.ceil(maximum / bundleSize)),
 					bundledRequestNum => {
 						const bundled = [];
-						_.range(bundleSize).each(transactionIndexWithinBundle => {
+						_.range(bundleSize).forEach(transactionIndexWithinBundle => {
 							const account =
-								bundledRequestNum * bundleSize + transactionIndexWithinBundle;
+								accounts[
+									bundledRequestNum * bundleSize + transactionIndexWithinBundle
+								];
 							const transaction = lisk.delegate.createDelegate(
 								account.password,
 								account.username
@@ -97,7 +106,7 @@ module.exports = function(params) {
 			});
 
 			it('should confirm all type 2 bundled transactions on all nodes', done => {
-				var blocksToWait = Math.ceil(maximum / constants.maxTxsPerBlock);
+				var blocksToWait = Math.ceil(maximum / constants.maxTxsPerBlock) + 1;
 				waitFor.blocks(blocksToWait, () => {
 					confirmTransactionsOnAllNodes(delegateTransactions).then(done);
 				});
@@ -107,7 +116,7 @@ module.exports = function(params) {
 		describe('sending 1000 single delgate transactions from accounts with funds', () => {
 			const delegateTransactions = [];
 
-			before('create and post 1000 delegate transactions separtely', () => {
+			beforeEach('create and post 1000 delegate transactions separtely', () => {
 				return Promise.all(
 					_.range(maximum).map(index => {
 						const account = accounts[index];
@@ -122,7 +131,7 @@ module.exports = function(params) {
 			});
 
 			it('should confirm all type 2 transactions on all nodes', done => {
-				var blocksToWait = Math.ceil(maximum / constants.maxTxsPerBlock);
+				var blocksToWait = Math.ceil(maximum / constants.maxTxsPerBlock) + 1;
 				waitFor.blocks(blocksToWait, () => {
 					confirmTransactionsOnAllNodes(delegateTransactions).then(done);
 				});

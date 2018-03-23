@@ -19,12 +19,13 @@ var utils = require('./utils');
 var setup = require('./setup');
 var scenarios = require('./scenarios');
 
+const noOfPeers = 2;
 describe('given configurations for 10 nodes with address "127.0.0.1", WS ports 500[0-9] and HTTP ports 400[0-9] using separate databases', () => {
 	var configurations;
 
 	before(done => {
 		utils.http.setVersion('1.0.0');
-		configurations = _.range(10).map(index => {
+		configurations = _.range(noOfPeers).map(index => {
 			var devConfigCopy = _.cloneDeep(devConfig);
 			devConfigCopy.ip = '127.0.0.1';
 			devConfigCopy.wsPort = 5000 + index;
@@ -40,7 +41,7 @@ describe('given configurations for 10 nodes with address "127.0.0.1", WS ports 5
 				configuration.peers.list = setup.sync.generatePeers(
 					configurations,
 					setup.sync.SYNC_MODES.ALL_TO_GROUP,
-					{ indices: _.range(10) }
+					{ indices: _.range(noOfPeers) }
 				);
 			});
 		});
@@ -105,18 +106,18 @@ describe('given configurations for 10 nodes with address "127.0.0.1", WS ports 5
 						before(done => {
 							setup.shell.runMochaTests(
 								[
-									'test/functional/http/get/blocks.js',
-									'test/functional/http/get/transactions.js',
+									//								'test/functional/http/get/blocks.js',
+									//								'test/functional/http/get/transactions.js',
 								],
 								done
 							);
 						});
 
-						scenarios.propagation.blocks(params);
+						//					scenarios.propagation.blocks(params);
 
-						scenarios.propagation.transactions(params);
+						//					scenarios.propagation.transactions(params);
 
-						scenarios.stress.transfer(params);
+						scenarios.stress.delegate(params);
 					});
 				});
 			});
