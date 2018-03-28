@@ -501,7 +501,7 @@ TransactionPool.prototype.queueTransaction = function (transaction, cb) {
 		} else {
 			self.addBundledTransaction(transaction);
 		}
-	} else if (transaction.type === transactionTypes.MULTI || Array.isArray(transaction.signatures)) {
+	} else if (transaction.type === transactionTypes.MULTI || (Array.isArray(transaction.signatures) && (transaction.signatures.length > 0))) {
 		if (self.countMultisignature() >= config.transactions.maxTxsPerQueue) {
 			return setImmediate(cb, 'Transaction pool is full');
 		} else {
