@@ -590,7 +590,7 @@ d.run(() => {
 						pingInterval: 5000,
 						// How many milliseconds to wait without receiving a ping
 						// before closing the socket
-						pingTimeout: 60000,
+						pingTimeout: 12000,
 						// Maximum amount of milliseconds to wait before force-killing
 						// a process after it was passed a 'SIGTERM' or 'SIGUSR2' signal
 						processTermTimeout: 10000,
