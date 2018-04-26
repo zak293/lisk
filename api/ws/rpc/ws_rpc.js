@@ -14,6 +14,8 @@
 
 'use strict';
 
+const _ = require('lodash');
+
 let wsServer = null;
 
 /**
@@ -71,6 +73,69 @@ const wsRPC = {
 			throw new Error('WS server has not been initialized!');
 		}
 		return wsServer.socketCluster.options.authKey;
+	},
+
+	registerRPC: (peer, logger) => {
+		// Assemble empty RPC entry
+		peer.rpc = {};
+		let wsServer;
+		try {
+			wsServer = wsRPC.getServer();
+		} catch (wsServerNotInitializedException) {
+			return peer;
+		}
+		// Register RPC methods on peer
+		peer = _.reduce(
+			wsServer.endpoints.rpc,
+			(peerExtendedWithRPC, localHandler, rpcProcedureName) => {
+				peerExtendedWithRPC.rpc[rpcProcedureName] = (data, rpcCallback) => {
+					// Provide default parameters if called with non standard parameter, callback
+					rpcCallback =
+						typeof rpcCallback === 'function'
+							? rpcCallback
+							: typeof data === 'function' ? data : () => {};
+					data = data && typeof data !== 'function' ? data : {};
+
+					logger.trace(
+						`[Outbound socket :: call] Peer RPC procedure '${rpcProcedureName}' called with data`,
+						data
+					);
+
+					if (peer.socket) {
+						peer.socket
+							.call(rpcProcedureName, data)
+							.then(res => {
+								setImmediate(rpcCallback, null, res);
+							})
+							.catch(err => {
+								setImmediate(rpcCallback, err);
+							});
+					} else {
+						logger.debug(
+							'Tried to call RPC function on outbound peer socket which no longer exists'
+						);
+					}
+				};
+				return peerExtendedWithRPC;
+			},
+			peer
+		);
+
+		// Register Publish methods on peer
+		return _.reduce(
+			wsServer.endpoints.event,
+			(peerExtendedWithPublish, localHandler, eventProcedureName) => {
+				peerExtendedWithPublish.rpc[eventProcedureName] = data => {
+					logger.trace(
+						`[Outbound socket :: emit] Peer event '${eventProcedureName}' called with data`,
+						data
+					);
+					peer.socket.emit(eventProcedureName, data);
+				};
+				return peerExtendedWithPublish;
+			},
+			peer
+		);
 	},
 };
 

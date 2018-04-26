@@ -19,7 +19,6 @@ const scClient = require('socketcluster-client');
 const WAMPClient = require('wamp-socket-cluster/WAMPClient');
 const failureCodes = require('../../../api/ws/rpc/failure_codes');
 const System = require('../../../modules/system');
-const wsRPC = require('../../../api/ws/rpc/ws_rpc').wsRPC;
 const Peer = require('../../../logic/peer');
 
 const TIMEOUT = 2000;
@@ -33,7 +32,6 @@ const connect = (peer, logger) => {
 	connectSteps.addSocket(peer, logger);
 
 	connectSteps.upgradeSocket(peer);
-	connectSteps.registerRPC(peer, logger);
 
 	connectSteps.registerSocketListeners(peer, logger);
 
@@ -90,69 +88,6 @@ const connectSteps = {
 	upgradeSocket: peer => {
 		wampClient.upgradeToWAMP(peer.socket);
 		return peer;
-	},
-
-	registerRPC: (peer, logger) => {
-		// Assemble empty RPC entry
-		peer.rpc = {};
-		let wsServer;
-		try {
-			wsServer = wsRPC.getServer();
-		} catch (wsServerNotInitializedException) {
-			return peer;
-		}
-		// Register RPC methods on peer
-		peer = _.reduce(
-			wsServer.endpoints.rpc,
-			(peerExtendedWithRPC, localHandler, rpcProcedureName) => {
-				peerExtendedWithRPC.rpc[rpcProcedureName] = (data, rpcCallback) => {
-					// Provide default parameters if called with non standard parameter, callback
-					rpcCallback =
-						typeof rpcCallback === 'function'
-							? rpcCallback
-							: typeof data === 'function' ? data : () => {};
-					data = data && typeof data !== 'function' ? data : {};
-
-					logger.trace(
-						`[Outbound socket :: call] Peer RPC procedure '${rpcProcedureName}' called with data`,
-						data
-					);
-
-					if (peer.socket) {
-						peer.socket
-							.call(rpcProcedureName, data)
-							.then(res => {
-								setImmediate(rpcCallback, null, res);
-							})
-							.catch(err => {
-								setImmediate(rpcCallback, err);
-							});
-					} else {
-						logger.debug(
-							'Tried to call RPC function on outbound peer socket which no longer exists'
-						);
-					}
-				};
-				return peerExtendedWithRPC;
-			},
-			peer
-		);
-
-		// Register Publish methods on peer
-		return _.reduce(
-			wsServer.endpoints.event,
-			(peerExtendedWithPublish, localHandler, eventProcedureName) => {
-				peerExtendedWithPublish.rpc[eventProcedureName] = data => {
-					logger.trace(
-						`[Outbound socket :: emit] Peer event '${eventProcedureName}' called with data`,
-						data
-					);
-					peer.socket.emit(eventProcedureName, data);
-				};
-				return peerExtendedWithPublish;
-			},
-			peer
-		);
 	},
 
 	registerSocketListeners: (peer, logger) => {
