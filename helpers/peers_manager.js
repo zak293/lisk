@@ -14,6 +14,8 @@
 
 'use strict';
 
+const wsRPC = require('../api/ws/rpc/ws_rpc').wsRPC;
+
 /**
  * Description of the class.
  *
@@ -46,6 +48,10 @@ PeersManager.prototype.add = function(peer) {
 			peer.string !== this.nonceToAddressMap[peer.nonce])
 	) {
 		return false;
+	}
+
+	if (peer.rpc === undefined) {
+		wsRPC.registerRPC(peer, this.logger);
 	}
 
 	this.peers[peer.string] = peer;
