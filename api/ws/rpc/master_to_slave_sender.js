@@ -17,11 +17,11 @@
 const wsRPC = require('../rpc/ws_rpc').wsRPC;
 
 const masterToSlaveSender = {
-	send: (workerId, data, cb) => {
+	send: (workerId, procedure, data, cb) => {
 		const sendPayload = Object.assign({}, { data });
 		wsRPC.getServer().sendToWorker(workerId, sendPayload, cb);
 	},
-	emit: (workerId, data) => {
+	emit: (workerId, procedure, data) => {
 		const emitPayload = Object.assign({}, { data });
 		wsRPC.getServer().sendToWorker(workerId, emitPayload);
 	},
