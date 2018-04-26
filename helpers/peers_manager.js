@@ -14,9 +14,6 @@
 
 'use strict';
 
-const connect = require('../api/ws/rpc/connect');
-const disconnect = require('../api/ws/rpc/disconnect');
-
 /**
  * Description of the class.
  *
@@ -53,13 +50,6 @@ PeersManager.prototype.add = function(peer) {
 
 	this.peers[peer.string] = peer;
 
-	if (peer.socket) {
-		// Reconnect existing socket
-		peer.socket.connect();
-	} else {
-		// Create client WS connection to peer
-		connect(peer, this.logger);
-	}
 	if (peer.nonce) {
 		this.addressToNonceMap[peer.string] = peer.nonce;
 		this.nonceToAddressMap[peer.nonce] = peer.string;
@@ -90,7 +80,6 @@ PeersManager.prototype.remove = function(peer) {
 	this.peers[peer.string] = null;
 	delete this.peers[peer.string];
 
-	disconnect(peer);
 	return true;
 };
 
