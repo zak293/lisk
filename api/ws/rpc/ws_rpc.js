@@ -15,6 +15,7 @@
 'use strict';
 
 const _ = require('lodash');
+const masterToSlaveSender = require('./master_to_slave_sender');
 
 let wsServer = null;
 
@@ -101,20 +102,7 @@ const wsRPC = {
 						data
 					);
 
-					if (peer.socket) {
-						peer.socket
-							.call(rpcProcedureName, data)
-							.then(res => {
-								setImmediate(rpcCallback, null, res);
-							})
-							.catch(err => {
-								setImmediate(rpcCallback, err);
-							});
-					} else {
-						logger.debug(
-							'Tried to call RPC function on outbound peer socket which no longer exists'
-						);
-					}
+					masterToSlaveSender.send(0, rpcProcedureName, data, rpcCallback);
 				};
 				return peerExtendedWithRPC;
 			},
@@ -130,7 +118,7 @@ const wsRPC = {
 						`[Outbound socket :: emit] Peer event '${eventProcedureName}' called with data`,
 						data
 					);
-					peer.socket.emit(eventProcedureName, data);
+					masterToSlaveSender.emit(0, eventProcedureName, data);
 				};
 				return peerExtendedWithPublish;
 			},
