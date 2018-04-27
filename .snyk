@@ -5,7 +5,64 @@ ignore:
   'npm:qs:20170213':
     - istanbul-middleware > body-parser > qs:
         reason: None given
-        expires: '2018-03-08T16:18:03.803Z'
+        expires: '2018-05-27T11:01:45.384Z'
+  'npm:deep-extend:20180409':
+    - sway > json-schema-faker > deref > deep-extend:
+        reason: None given
+        expires: '2018-05-27T11:01:45.383Z'
+    - swagger-node-runner > sway > json-schema-faker > deref > deep-extend:
+        reason: None given
+        expires: '2018-05-27T11:01:45.383Z'
+  'npm:hoek:20180212':
+    - socketcluster > sc-auth > sc-jsonwebtoken > joi > hoek:
+        reason: None given
+        expires: '2018-05-27T10:07:14.964Z'
+    - socketcluster > socketcluster-server > sc-auth > sc-jsonwebtoken > joi > hoek:
+        reason: None given
+        expires: '2018-05-27T10:07:14.964Z'
+    - socketcluster > sc-auth > sc-jsonwebtoken > joi > topo > hoek:
+        reason: None given
+        expires: '2018-05-27T10:07:14.964Z'
+    - socketcluster > socketcluster-server > sc-auth > sc-jsonwebtoken > joi > topo > hoek:
+        reason: None given
+        expires: '2018-05-27T10:07:14.964Z'
+  'npm:lodash:20180130':
+    - istanbul-middleware > archiver > lodash:
+        reason: None given
+        expires: '2018-05-27T11:01:45.383Z'
+    - istanbul-middleware > archiver > zip-stream > lodash:
+        reason: None given
+        expires: '2018-05-27T11:01:45.383Z'
+    - swagger-node-runner > lodash:
+        reason: None given
+        expires: '2018-05-27T11:01:45.383Z'
+    - swagger-node-runner > bagpipes > lodash:
+        reason: None given
+        expires: '2018-05-27T11:01:45.383Z'
+    - swagger-node-runner > bagpipes > machinepack-http > lodash:
+        reason: None given
+        expires: '2018-05-27T11:01:45.383Z'
+    - swagger-node-runner > bagpipes > machinepack-http > machine > lodash:
+        reason: None given
+        expires: '2018-05-27T11:01:45.383Z'
+    - swagger-node-runner > bagpipes > machinepack-http > machine > rttc > lodash:
+        reason: None given
+        expires: '2018-05-27T11:01:45.383Z'
+    - swagger-node-runner > bagpipes > machinepack-http > machine > switchback > lodash:
+        reason: None given
+        expires: '2018-05-27T11:01:45.383Z'
+    - swagger-node-runner > bagpipes > machinepack-http > machinepack-urls > lodash:
+        reason: None given
+        expires: '2018-05-27T11:01:45.383Z'
+    - swagger-node-runner > bagpipes > machinepack-http > machinepack-urls > machine > lodash:
+        reason: None given
+        expires: '2018-05-27T11:01:45.383Z'
+    - swagger-node-runner > bagpipes > machinepack-http > machinepack-urls > machine > rttc > lodash:
+        reason: None given
+        expires: '2018-05-27T11:01:45.384Z'
+    - swagger-node-runner > bagpipes > machinepack-http > machinepack-urls > machine > switchback > lodash:
+        reason: None given
+        expires: '2018-05-27T11:01:45.384Z'
 # patches apply the minimum changes required to fix a vulnerability
 patch:
   'npm:debug:20170905':
@@ -13,7 +70,7 @@ patch:
         patched: '2018-02-06T16:13:04.525Z'
   'npm:minimatch:20160620':
     - istanbul-middleware > archiver > glob > minimatch:
-        patched: '2018-02-06T16:13:04.525Z'
+        patched: '2018-04-27T11:00:55.828Z'
   'npm:ms:20170412':
     - istanbul-middleware > body-parser > debug > ms:
-        patched: '2018-02-06T16:13:04.525Z'
+        patched: '2018-04-27T11:00:55.828Z'
