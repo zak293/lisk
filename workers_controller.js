@@ -30,6 +30,15 @@ var failureCodes = require('./api/ws/rpc/failure_codes');
 var Logger = require('./logger');
 var config = require('./config.json');
 
+
+const onEventRequest = () => {
+	console.log('onEventRequest');
+};
+
+const onRPCRequest = () => {
+	console.log('onRPCRequest');
+};
+
 /**
  * Instantiate the SocketCluster SCWorker instance with custom logic
  * inside the run function. The run function is invoked when the worker process
@@ -56,7 +65,7 @@ SCWorker.create({
 				slaveWAMPServer: [
 					'logger',
 					function(scope, cb) {
-						new SlaveWAMPServer(self, 20e3, cb);
+						new SlaveWAMPServer(self, 20e3, cb, onRPCRequest, onEventRequest);
 					},
 				],
 
