@@ -30,7 +30,6 @@ var failureCodes = require('./api/ws/rpc/failure_codes');
 var Logger = require('./logger');
 var config = require('./config.json');
 
-
 const onEventRequest = () => {
 	console.log('onEventRequest');
 };
@@ -111,7 +110,8 @@ SCWorker.create({
 				scServer.addMiddleware(
 					scServer.MIDDLEWARE_HANDSHAKE_WS,
 					(req, next) => {
-						scope.handshake(extractHeaders(req), (err, peer) => {
+						req.peerHeaders = extractHeaders(req);
+						scope.handshake(req.peerHeaders, (err, peer) => {
 							if (err) {
 								// Set a custom property on the HTTP request object; we will check this property and handle
 								// this issue later.
@@ -131,6 +131,7 @@ SCWorker.create({
 				scServer.addMiddleware(scServer.MIDDLEWARE_EMIT, emitMiddleware);
 
 				scServer.on('handshake', socket => {
+					socket.nonce = socket.request.peerHeaders.nonce;
 					socket.on('message', message => {
 						scope.logger.trace(
 							`[Inbound socket :: message] Received message from ${
@@ -202,7 +203,7 @@ SCWorker.create({
 					if (failureCodes.errorMessages[code]) {
 						return;
 					}
-					var headers = extractHeaders(socket.request);
+					var headers = socket.request.peerHeaders;
 					scope.slaveWAMPServer.onSocketDisconnect(socket);
 					updatePeerConnection(
 						Rules.UPDATES.REMOVE,
