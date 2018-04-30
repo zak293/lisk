@@ -171,6 +171,11 @@ SCWorker.create({
 							socket.request.remoteAddress
 						} succeeded`
 					);
+				});
+
+				scServer.on('connection', socket => {
+					scope.slaveWAMPServer.upgradeToWAMP(socket);
+					socket.on('disconnect', removePeerConnection.bind(null, socket));
 
 					updatePeerConnection(
 						Rules.UPDATES.INSERT,
@@ -185,11 +190,6 @@ SCWorker.create({
 							}
 						}
 					);
-				});
-
-				scServer.on('connection', socket => {
-					scope.slaveWAMPServer.upgradeToWAMP(socket);
-					socket.on('disconnect', removePeerConnection.bind(null, socket));
 				});
 
 				function removePeerConnection(socket, code) {
