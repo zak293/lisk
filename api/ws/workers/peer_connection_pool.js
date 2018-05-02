@@ -175,6 +175,26 @@ PeerConnectionPool.prototype.removePeer = function(peerData) {
 	return true;
 };
 
+PeerConnectionPool.prototype.callPeer = function(peerNonce, procedure, data) {
+  let peer = this.noncePeerMap[peerNonce];
+  if (!peer) {
+    let message = `Failed to call RPC '${procedure}' on non-existent peer ${peerNonce}`;
+    this.logger.debug(message);
+    return Promise.reject(message);
+  }
+  return peer.soket.call(procedure, data);
+};
+
+PeerConnectionPool.prototype.emitToPeer = function(peerNonce, event, data) {
+  let peer = this.noncePeerMap[peerNonce];
+  if (!peer) {
+    let message = `Failed to emit event '${event}' on non-existent peer ${peerNonce}`;
+    this.logger.debug(message);
+    return Promise.reject(message);
+  }
+  return peer.soket.emit(event, data);
+};
+
 PeerConnectionPool.prototype._upgradeSocket = function(socket) {
   this.wampClient.upgradeToWAMP(socket);
 };
