@@ -117,7 +117,7 @@ PeerConnectionPool.prototype.addPeer = function(newPeerData) {
 
   if (!existingPeerHasUsableSocket && !newPeerHasUsableSocket) {
     let connectionOptions = {
-      autoConnect: false, // Lazy connection establishment
+      autoConnect: true,
       autoReconnect: false,
       connectTimeout: TIMEOUT,
       ackTimeout: TIMEOUT,
